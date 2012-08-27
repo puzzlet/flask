@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import imp
 import os
@@ -126,8 +126,8 @@ class Config(dict):
         d = imp.new_module('config')
         d.__file__ = filename
         try:
-            execfile(filename, d.__dict__)
-        except IOError, e:
+            exec(compile(open(filename).read(), filename, 'exec'), d.__dict__)
+        except IOError as e:
             if silent and e.errno in (errno.ENOENT, errno.EISDIR):
                 return False
             e.strerror = 'Unable to load configuration file (%s)' % e.strerror
@@ -158,7 +158,7 @@ class Config(dict):
 
         :param obj: an import name or object
         """
-        if isinstance(obj, basestring):
+        if isinstance(obj, str):
             obj = import_string(obj)
         for key in dir(obj):
             if key.isupper():

@@ -8,7 +8,7 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
+
 
 import os
 import sys
@@ -57,7 +57,7 @@ class ConfigTestCase(FlaskTestCase):
             app = flask.Flask(__name__)
             try:
                 app.config.from_envvar('FOO_SETTINGS')
-            except RuntimeError, e:
+            except RuntimeError as e:
                 self.assert_("'FOO_SETTINGS' is not set" in str(e))
             else:
                 self.assert_(0, 'expected exception')
@@ -76,7 +76,7 @@ class ConfigTestCase(FlaskTestCase):
             try:
                 app = flask.Flask(__name__)
                 app.config.from_envvar('FOO_SETTINGS')
-            except IOError, e:
+            except IOError as e:
                 msg = str(e)
                 self.assert_(msg.startswith('[Errno 2] Unable to load configuration '
                                             'file (No such file or directory):'))
@@ -91,7 +91,7 @@ class ConfigTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         try:
             app.config.from_pyfile('missing.cfg')
-        except IOError, e:
+        except IOError as e:
             msg = str(e)
             self.assert_(msg.startswith('[Errno 2] Unable to load configuration '
                                         'file (No such file or directory):'))
@@ -113,7 +113,7 @@ class LimitedLoaderMockWrapper(object):
     def __getattr__(self, name):
         if name in ('archive', 'get_filename'):
             msg = 'Mocking a loader which does not have `%s.`' % name
-            raise AttributeError, msg
+            raise AttributeError(msg)
         return getattr(self.loader, name)
 
 
@@ -141,7 +141,7 @@ class InstanceTestCase(FlaskTestCase):
         here = os.path.abspath(os.path.dirname(__file__))
         try:
             flask.Flask(__name__, instance_path='instance')
-        except ValueError, e:
+        except ValueError as e:
             self.assert_('must be absolute' in str(e))
         else:
             self.fail('Expected value error')

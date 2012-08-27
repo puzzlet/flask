@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import gc
 import sys
@@ -76,7 +76,7 @@ class MemoryTestCase(FlaskTestCase):
         if sys.version_info >= (2, 7) and \
                 not hasattr(sys, 'pypy_translation_info'):
             with self.assert_no_leak():
-                for x in xrange(10):
+                for x in range(10):
                     fire()
 
 

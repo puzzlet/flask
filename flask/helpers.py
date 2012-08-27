@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import os
 import sys
@@ -161,7 +161,7 @@ def stream_with_context(generator_or_function):
     # pushed.  This item is discarded.  Then when the iteration continues the
     # real generator is executed.
     wrapped_g = generator()
-    wrapped_g.next()
+    next(wrapped_g)
     return wrapped_g
 
 
@@ -352,7 +352,7 @@ def url_for(endpoint, **values):
     try:
         rv = url_adapter.build(endpoint, values, method=method,
                                force_external=external)
-    except BuildError, error:
+    except BuildError as error:
         # We need to inject the values again so that the app callback can
         # deal with that sort of stuff.
         values['_external'] = external
@@ -450,7 +450,7 @@ def get_flashed_messages(with_categories=False, category_filter=[]):
         _request_ctx_stack.top.flashes = flashes = session.pop('_flashes') \
             if '_flashes' in session else []
     if category_filter:
-        flashes = filter(lambda f: f[0] in category_filter, flashes)
+        flashes = [f for f in flashes if f[0] in category_filter]
     if not with_categories:
         return [x[1] for x in flashes]
     return flashes
@@ -517,7 +517,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
                           :data:`~flask.current_app`.
     """
     mtime = None
-    if isinstance(filename_or_fp, basestring):
+    if isinstance(filename_or_fp, str):
         filename = filename_or_fp
         file = None
     else:
@@ -528,7 +528,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
         # XXX: this behavior is now deprecated because it was unreliable.
         # removed in Flask 1.0
         if not attachment_filename and not mimetype \
-           and isinstance(filename, basestring):
+           and isinstance(filename, str):
             warn(DeprecationWarning('The filename support for file objects '
                 'passed to send_file is now deprecated.  Pass an '
                 'attach_filename if you want mimetypes to be guessed.'),
@@ -589,7 +589,7 @@ def send_file(filename_or_fp, mimetype=None, as_attachment=False,
             os.path.getmtime(filename),
             os.path.getsize(filename),
             adler32(
-                filename.encode('utf8') if isinstance(filename, unicode)
+                filename.encode('utf8') if isinstance(filename, str)
                 else filename
             ) & 0xffffffff
         ))

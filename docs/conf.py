@@ -42,8 +42,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Flask'
-copyright = u'2012, Armin Ronacher'
+project = 'Flask'
+copyright = '2012, Armin Ronacher'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -52,10 +52,10 @@ import pkg_resources
 try:
     release = pkg_resources.get_distribution('Flask').version
 except pkg_resources.DistributionNotFound:
-    print 'To build the documentation, The distribution information of Flask'
-    print 'Has to be available.  Either install the package into your'
-    print 'development environment or run "setup.py develop" to setup the'
-    print 'metadata.  A virtualenv is recommended!'
+    print('To build the documentation, The distribution information of Flask')
+    print('Has to be available.  Either install the package into your')
+    print('development environment or run "setup.py develop" to setup the')
+    print('metadata.  A virtualenv is recommended!')
     sys.exit(1)
 del pkg_resources
 
@@ -186,8 +186,8 @@ htmlhelp_basename = 'Flaskdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('latexindex', 'Flask.tex', u'Flask Documentation',
-   u'Armin Ronacher', 'manual'),
+  ('latexindex', 'Flask.tex', 'Flask Documentation',
+   'Armin Ronacher', 'manual'),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -256,13 +256,13 @@ pygments_style = 'flask_theme_support.FlaskyStyle'
 # fall back if theme is not there
 try:
     __import__('flask_theme_support')
-except ImportError, e:
-    print '-' * 74
-    print 'Warning: Flask themes unavailable.  Building with default theme'
-    print 'If you want the Flask themes, run this command and build again:'
-    print
-    print '  git submodule update --init'
-    print '-' * 74
+except ImportError as e:
+    print('-' * 74)
+    print('Warning: Flask themes unavailable.  Building with default theme')
+    print('If you want the Flask themes, run this command and build again:')
+    print()
+    print('  git submodule update --init')
+    print('-' * 74)
 
     pygments_style = 'tango'
     html_theme = 'default'

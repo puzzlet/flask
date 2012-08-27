@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import flask
 import unittest
@@ -85,7 +85,7 @@ class TestToolsTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            return unicode(flask.session['foo'])
+            return str(flask.session['foo'])
 
         with app.test_client() as c:
             with c.session_transaction() as sess:
@@ -106,7 +106,7 @@ class TestToolsTestCase(FlaskTestCase):
             try:
                 with c.session_transaction() as sess:
                     pass
-            except RuntimeError, e:
+            except RuntimeError as e:
                 self.assert_('Session backend did not open a session' in str(e))
             else:
                 self.fail('Expected runtime error')
@@ -130,7 +130,7 @@ class TestToolsTestCase(FlaskTestCase):
         try:
             with c.session_transaction() as s:
                 pass
-        except RuntimeError, e:
+        except RuntimeError as e:
             self.assert_('cookies' in str(e))
         else:
             self.fail('Expected runtime error')

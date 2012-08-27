@@ -9,12 +9,12 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import os
 import sys
 import shutil
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import tempfile
 import subprocess
 import argparse
@@ -42,7 +42,7 @@ flaskdir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 os.environ['PYTHONDONTWRITEBYTECODE'] = ''
 
 
-RESULT_TEMPATE = u'''\
+RESULT_TEMPATE = '''\
 <!doctype html>
 <title>Flask-Extension Test Results</title>
 <style type=text/css>
@@ -114,7 +114,7 @@ RESULT_TEMPATE = u'''\
 
 
 def log(msg, *args):
-    print '[EXTTEST]', msg % args
+    print('[EXTTEST]', msg % args)
 
 
 class TestResult(object):
@@ -172,8 +172,8 @@ def get_test_command(checkout_dir):
 
 
 def fetch_extensions_list():
-    req = urllib2.Request(flask_svc_url, headers={'accept':'application/json'})
-    d = urllib2.urlopen(req).read()
+    req = urllib.request.Request(flask_svc_url, headers={'accept':'application/json'})
+    d = urllib.request.urlopen(req).read()
     data = json.loads(d)
     for ext in data['extensions']:
         yield ext
@@ -271,7 +271,7 @@ def run_tests(extensions, interpreters):
 
 def render_results(results, approved):
     from jinja2 import Template
-    items = results.values()
+    items = list(results.values())
     items.sort(key=lambda x: x.name.lower())
     rv = Template(RESULT_TEMPATE, autoescape=True).render(results=items,
                                                           approved=approved)
@@ -304,7 +304,7 @@ def main():
     if args.browse:
         import webbrowser
         webbrowser.open('file:///' + filename.lstrip('/'))
-    print 'Results written to', filename
+    print('Results written to', filename)
 
 
 if __name__ == '__main__':

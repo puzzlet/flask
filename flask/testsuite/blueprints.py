@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import flask
 import unittest
@@ -183,7 +183,7 @@ class ModuleTestCase(FlaskTestCase):
         with app.test_request_context():
             try:
                 flask.render_template('missing.html')
-            except TemplateNotFound, e:
+            except TemplateNotFound as e:
                 self.assert_equal(e.name, 'missing.html')
             else:
                 self.assert_(0, 'expected exception')
@@ -304,17 +304,17 @@ class BlueprintTestCase(FlaskTestCase):
 
         @bp.route('/bar')
         def bar(bar):
-            return unicode(bar)
+            return str(bar)
 
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/1', url_defaults={'bar': 23})
         app.register_blueprint(bp, url_prefix='/2', url_defaults={'bar': 19})
 
         c = app.test_client()
-        self.assert_equal(c.get('/1/foo').data, u'23/42')
-        self.assert_equal(c.get('/2/foo').data, u'19/42')
-        self.assert_equal(c.get('/1/bar').data, u'23')
-        self.assert_equal(c.get('/2/bar').data, u'19')
+        self.assert_equal(c.get('/1/foo').data, '23/42')
+        self.assert_equal(c.get('/2/foo').data, '19/42')
+        self.assert_equal(c.get('/1/bar').data, '23')
+        self.assert_equal(c.get('/2/bar').data, '19')
 
     def test_blueprint_url_processors(self):
         bp = flask.Blueprint('frontend', __name__, url_prefix='/<lang_code>')
@@ -378,7 +378,7 @@ class BlueprintTestCase(FlaskTestCase):
         with app.test_request_context():
             try:
                 flask.render_template('missing.html')
-            except TemplateNotFound, e:
+            except TemplateNotFound as e:
                 self.assert_equal(e.name, 'missing.html')
             else:
                 self.assert_(0, 'expected exception')
@@ -548,7 +548,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
+        self.assert_('my_reverse' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -559,7 +559,7 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_filter(my_reverse)
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
+        self.assert_('my_reverse' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -570,7 +570,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('strrev' in  app.jinja_env.filters.keys())
+        self.assert_('strrev' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -581,7 +581,7 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_filter(my_reverse, 'strrev')
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('strrev' in  app.jinja_env.filters.keys())
+        self.assert_('strrev' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 

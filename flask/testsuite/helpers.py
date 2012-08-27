@@ -9,13 +9,13 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import os
 import flask
 import unittest
 from logging import StreamHandler
-from StringIO import StringIO
+from io import StringIO
 from flask.testsuite import FlaskTestCase, catch_warnings, catch_stderr
 from werkzeug.http import parse_cache_control_header, parse_options_header
 
@@ -35,7 +35,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return unicode(flask.request.json)
+            return str(flask.request.json)
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
@@ -44,7 +44,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/json', methods=['POST'])
         def return_json():
-            return unicode(flask.request.json)
+            return str(flask.request.json)
         c = app.test_client()
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
@@ -60,9 +60,9 @@ class JSONTestCase(FlaskTestCase):
             return flask.request.json
 
         c = app.test_client()
-        resp = c.get('/', data=u'"Hällo Wörld"'.encode('iso-8859-15'),
+        resp = c.get('/', data='"Hällo Wörld"'.encode('iso-8859-15'),
                      content_type='application/json; charset=iso-8859-15')
-        self.assert_equal(resp.data, u'Hällo Wörld'.encode('utf-8'))
+        self.assert_equal(resp.data, 'Hällo Wörld'.encode('utf-8'))
 
     def test_jsonify(self):
         d = dict(a=23, b=42, c=[1, 2, 3])
@@ -83,7 +83,7 @@ class JSONTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/add', methods=['POST'])
         def add():
-            return unicode(flask.request.json['a'] + flask.request.json['b'])
+            return str(flask.request.json['a'] + flask.request.json['b'])
         c = app.test_client()
         rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
                             content_type='application/json')
@@ -109,9 +109,9 @@ class JSONTestCase(FlaskTestCase):
         def index():
             return flask.request.args['foo']
 
-        rv = app.test_client().get(u'/?foo=정상처리'.encode('euc-kr'))
+        rv = app.test_client().get('/?foo=정상처리'.encode('euc-kr'))
         self.assert_equal(rv.status_code, 200)
-        self.assert_equal(rv.data, u'정상처리'.encode('utf-8'))
+        self.assert_equal(rv.data, '정상처리'.encode('utf-8'))
 
     if not has_encoding('euc-kr'):
         test_modified_url_encoding = None
@@ -439,8 +439,8 @@ class StreamingTestCase(FlaskTestCase):
                 return self
             def close(self):
                 called.append(42)
-            def next(self):
-                return self._gen.next()
+            def __next__(self):
+                return next(self._gen)
         @app.route('/')
         def index():
             def generate():

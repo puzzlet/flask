@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import re
 import flask
@@ -238,7 +238,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         def expect_exception(f, *args, **kwargs):
             try:
                 f(*args, **kwargs)
-            except RuntimeError, e:
+            except RuntimeError as e:
                 self.assert_(e.args and 'session is unavailable' in e.args[0])
             else:
                 self.assert_(False, 'expected exception')
@@ -259,7 +259,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         @app.route('/test')
         def test():
-            return unicode(flask.session.permanent)
+            return str(flask.session.permanent)
 
         client = app.test_client()
         rv = client.get('/')
@@ -322,50 +322,50 @@ class BasicFunctionalityTestCase(FlaskTestCase):
 
         @app.route('/')
         def index():
-            flask.flash(u'Hello World')
-            flask.flash(u'Hello World', 'error')
-            flask.flash(flask.Markup(u'<em>Testing</em>'), 'warning')
+            flask.flash('Hello World')
+            flask.flash('Hello World', 'error')
+            flask.flash(flask.Markup('<em>Testing</em>'), 'warning')
             return ''
 
         @app.route('/test/')
         def test():
             messages = flask.get_flashed_messages()
             self.assert_equal(len(messages), 3)
-            self.assert_equal(messages[0], u'Hello World')
-            self.assert_equal(messages[1], u'Hello World')
-            self.assert_equal(messages[2], flask.Markup(u'<em>Testing</em>'))
+            self.assert_equal(messages[0], 'Hello World')
+            self.assert_equal(messages[1], 'Hello World')
+            self.assert_equal(messages[2], flask.Markup('<em>Testing</em>'))
             return ''
 
         @app.route('/test_with_categories/')
         def test_with_categories():
             messages = flask.get_flashed_messages(with_categories=True)
             self.assert_equal(len(messages), 3)
-            self.assert_equal(messages[0], ('message', u'Hello World'))
-            self.assert_equal(messages[1], ('error', u'Hello World'))
-            self.assert_equal(messages[2], ('warning', flask.Markup(u'<em>Testing</em>')))
+            self.assert_equal(messages[0], ('message', 'Hello World'))
+            self.assert_equal(messages[1], ('error', 'Hello World'))
+            self.assert_equal(messages[2], ('warning', flask.Markup('<em>Testing</em>')))
             return ''
 
         @app.route('/test_filter/')
         def test_filter():
             messages = flask.get_flashed_messages(category_filter=['message'], with_categories=True)
             self.assert_equal(len(messages), 1)
-            self.assert_equal(messages[0], ('message', u'Hello World'))
+            self.assert_equal(messages[0], ('message', 'Hello World'))
             return ''
 
         @app.route('/test_filters/')
         def test_filters():
             messages = flask.get_flashed_messages(category_filter=['message', 'warning'], with_categories=True)
             self.assert_equal(len(messages), 2)
-            self.assert_equal(messages[0], ('message', u'Hello World'))
-            self.assert_equal(messages[1], ('warning', flask.Markup(u'<em>Testing</em>')))
+            self.assert_equal(messages[0], ('message', 'Hello World'))
+            self.assert_equal(messages[1], ('warning', flask.Markup('<em>Testing</em>')))
             return ''
 
         @app.route('/test_filters_without_returning_categories/')
         def test_filters():
             messages = flask.get_flashed_messages(category_filter=['message', 'warning'])
             self.assert_equal(len(messages), 2)
-            self.assert_equal(messages[0], u'Hello World')
-            self.assert_equal(messages[1], flask.Markup(u'<em>Testing</em>'))
+            self.assert_equal(messages[0], 'Hello World')
+            self.assert_equal(messages[1], flask.Markup('<em>Testing</em>'))
             return ''
 
         # Create new test client on each test to clean flashed messages.
@@ -583,7 +583,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         c = app.test_client()
         try:
             c.get('/fail')
-        except KeyError, e:
+        except KeyError as e:
             self.assert_(isinstance(e, BadRequest))
         else:
             self.fail('Expected exception')
@@ -599,7 +599,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         c = app.test_client()
         try:
             c.get('/fail')
-        except NotFound, e:
+        except NotFound as e:
             pass
         else:
             self.fail('Expected exception')
@@ -618,7 +618,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         with app.test_client() as c:
             try:
                 c.post('/fail', data={'foo': 'index.txt'})
-            except DebugFilesKeyError, e:
+            except DebugFilesKeyError as e:
                 self.assert_('no file contents were transmitted' in str(e))
                 self.assert_('This was submitted: "index.txt"' in str(e))
             else:
@@ -641,10 +641,10 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         @app.route('/unicode')
         def from_unicode():
-            return u'Hällo Wörld'
+            return 'Hällo Wörld'
         @app.route('/string')
         def from_string():
-            return u'Hällo Wörld'.encode('utf-8')
+            return 'Hällo Wörld'.encode('utf-8')
         @app.route('/args')
         def from_tuple():
             return 'Meh', 400, {
@@ -652,8 +652,8 @@ class BasicFunctionalityTestCase(FlaskTestCase):
                 'Content-Type': 'text/plain; charset=utf-8'
             }
         c = app.test_client()
-        self.assert_equal(c.get('/unicode').data, u'Hällo Wörld'.encode('utf-8'))
-        self.assert_equal(c.get('/string').data, u'Hällo Wörld'.encode('utf-8'))
+        self.assert_equal(c.get('/unicode').data, 'Hällo Wörld'.encode('utf-8'))
+        self.assert_equal(c.get('/string').data, 'Hällo Wörld'.encode('utf-8'))
         rv = c.get('/args')
         self.assert_equal(rv.data, 'Meh')
         self.assert_equal(rv.headers['X-Foo'], 'Testing')
@@ -722,7 +722,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         try:
             with app.test_request_context():
                 flask.url_for('spam')
-        except BuildError, error:
+        except BuildError as error:
             pass
         try:
             raise RuntimeError('Test case where BuildError is not current.')
@@ -769,7 +769,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             return None
         try:
             app.test_client().get('/')
-        except ValueError, e:
+        except ValueError as e:
             self.assert_equal(str(e), 'View function did not return a response')
             pass
         else:
@@ -802,7 +802,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         try:
             with app.test_request_context('/', environ_overrides={'HTTP_HOST': 'localhost'}):
                 pass
-        except Exception, e:
+        except Exception as e:
             self.assert_(isinstance(e, ValueError))
             self.assert_equal(str(e), "the server name provided " +
                     "('localhost.localdomain:5000') does not match the " + \
@@ -812,7 +812,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             app.config.update(SERVER_NAME='localhost')
             with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost'}):
                 pass
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError(
                 "No ValueError exception should have been raised \"%s\"" % e
             )
@@ -821,7 +821,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             app.config.update(SERVER_NAME='localhost:80')
             with app.test_request_context('/', environ_overrides={'SERVER_NAME': 'localhost:80'}):
                 pass
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError(
                 "No ValueError exception should have been raised \"%s\"" % e
             )
@@ -857,7 +857,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             rv = app.test_client().get('/', 'https://localhost.localdomain')
             # Werkzeug 0.8
             self.assert_equal(rv.status_code, 404)
-        except ValueError, e:
+        except ValueError as e:
             # Werkzeug 0.7
             self.assert_equal(str(e), "the server name provided " +
                     "('localhost.localdomain:443') does not match the " + \
@@ -868,7 +868,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             rv = app.test_client().get('/', 'http://foo.localhost')
             # Werkzeug 0.8
             self.assert_equal(rv.status_code, 404)
-        except ValueError, e:
+        except ValueError as e:
             # Werkzeug 0.7
             self.assert_equal(str(e), "the server name provided " + \
                     "('localhost.localdomain') does not match the " + \
@@ -989,7 +989,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             @app.route('/foo')
             def broken():
                 return 'Meh'
-        except AssertionError, e:
+        except AssertionError as e:
             self.assert_('A setup function was called' in str(e))
         else:
             self.fail('Expected exception')
@@ -1023,7 +1023,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
         with app.test_client() as c:
             try:
                 c.post('/foo', data={})
-            except AssertionError, e:
+            except AssertionError as e:
                 self.assert_('http://localhost/foo/' in str(e))
                 self.assert_('Make sure to directly send your POST-request '
                              'to this URL' in str(e))
@@ -1073,7 +1073,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             1/0
 
         c = app.test_client()
-        for x in xrange(3):
+        for x in range(3):
             with self.assert_raises(ZeroDivisionError):
                 c.get('/fail')
 

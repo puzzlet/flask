@@ -9,7 +9,7 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import flask
 import unittest
@@ -89,7 +89,7 @@ class TemplatingTestCase(FlaskTestCase):
         @app.template_filter()
         def my_reverse(s):
             return s[::-1]
-        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
+        self.assert_('my_reverse' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -98,7 +98,7 @@ class TemplatingTestCase(FlaskTestCase):
         def my_reverse(s):
             return s[::-1]
         app.add_template_filter(my_reverse)
-        self.assert_('my_reverse' in  app.jinja_env.filters.keys())
+        self.assert_('my_reverse' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -107,7 +107,7 @@ class TemplatingTestCase(FlaskTestCase):
         @app.template_filter('strrev')
         def my_reverse(s):
             return s[::-1]
-        self.assert_('strrev' in  app.jinja_env.filters.keys())
+        self.assert_('strrev' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -116,7 +116,7 @@ class TemplatingTestCase(FlaskTestCase):
         def my_reverse(s):
             return s[::-1]
         app.add_template_filter(my_reverse, 'strrev')
-        self.assert_('strrev' in  app.jinja_env.filters.keys())
+        self.assert_('strrev' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 

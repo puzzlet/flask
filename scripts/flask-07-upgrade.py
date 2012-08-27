@@ -59,7 +59,7 @@ def make_diff(filename, old, new):
                      posixpath.normpath(posixpath.join('a', filename)),
                      posixpath.normpath(posixpath.join('b', filename)),
                      lineterm=''):
-        print line
+        print(line)
 
 
 def looks_like_teardown_function(node):

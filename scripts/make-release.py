@@ -46,7 +46,7 @@ def parse_changelog():
 
 def bump_version(version):
     try:
-        parts = map(int, version.split('.'))
+        parts = list(map(int, version.split('.')))
     except ValueError:
         fail('Current version is not numeric')
     parts[-1] += 1
@@ -90,12 +90,12 @@ def build_and_upload():
 
 
 def fail(message, *args):
-    print >> sys.stderr, 'Error:', message % args
+    print('Error:', message % args, file=sys.stderr)
     sys.exit(1)
 
 
 def info(message, *args):
-    print >> sys.stderr, message % args
+    print(message % args, file=sys.stderr)
 
 
 def get_git_tags():

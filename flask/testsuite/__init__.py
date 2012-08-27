@@ -10,14 +10,14 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
+
 
 import os
 import sys
 import flask
 import warnings
 import unittest
-from StringIO import StringIO
+from io import StringIO
 from functools import update_wrapper
 from contextlib import contextmanager
 from werkzeug.utils import import_string, find_modules
@@ -155,7 +155,7 @@ class _ExceptionCatcher(object):
             self.test_case.fail('Expected exception of type %r' %
                                 exception_name)
         elif not issubclass(exc_type, self.exc_type):
-            raise exc_type, exc_value, tb
+            raise exc_type(exc_value).with_traceback(tb)
         return True
 
 
@@ -217,5 +217,5 @@ def main():
     """Runs the testsuite as command line application."""
     try:
         unittest.main(testLoader=BetterLoader(), defaultTest='suite')
-    except Exception, e:
-        print 'Error: %s' % e
+    except Exception as e:
+        print('Error: %s' % e)
