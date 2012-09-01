@@ -398,7 +398,7 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             evts.append('before')
         @app.after_request
         def after_request(response):
-            response.data += '|after'
+            response.data += b'|after'
             evts.append('after')
             return response
         @app.route('/')
@@ -723,11 +723,10 @@ class BasicFunctionalityTestCase(FlaskTestCase):
             with app.test_request_context():
                 flask.url_for('spam')
         except BuildError as error:
-            pass
-        try:
-            raise RuntimeError('Test case where BuildError is not current.')
-        except RuntimeError:
-            self.assertRaises(BuildError, app.handle_url_build_error, error, 'spam', {})
+            try:
+                raise RuntimeError('Test case where BuildError is not current.')
+            except RuntimeError:
+                self.assertRaises(BuildError, app.handle_url_build_error, error, 'spam', {})
 
         # Test a custom handler.
         def handler(error, endpoint, values):

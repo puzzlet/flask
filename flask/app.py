@@ -1261,7 +1261,7 @@ class Flask(_PackageBoundObject):
             if isinstance(e, typecheck):
                 return handler(e)
 
-        raise exc_type(exc_value).with_traceback(tb)
+        raise exc_value.with_traceback(tb)
 
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
@@ -1283,7 +1283,7 @@ class Flask(_PackageBoundObject):
             # (the function was actually called from the except part)
             # otherwise, we just raise the error again
             if exc_value is e:
-                raise exc_type(exc_value).with_traceback(tb)
+                raise exc_value.with_traceback(tb)
             else:
                 raise e
 
@@ -1511,7 +1511,7 @@ class Flask(_PackageBoundObject):
         # still the same one we can reraise it with the original traceback,
         # otherwise we raise it from here.
         if error is exc_value:
-            raise exc_type(exc_value).with_traceback(tb)
+            raise exc_value.with_traceback(tb)
         raise error
 
     def preprocess_request(self):

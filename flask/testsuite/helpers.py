@@ -49,8 +49,8 @@ class JSONTestCase(FlaskTestCase):
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
         self.assert_equal(rv.mimetype, 'application/json')
-        self.assertTrue(b'description' in flask.json.loads(rv.data))
-        self.assertTrue(b'<p>' not in flask.json.loads(rv.data)['description'])
+        self.assertTrue('description' in flask.json.loads(rv.data.decode('ascii')))
+        self.assertTrue('<p>' not in flask.json.loads(rv.data.decode('ascii'))['description'])
 
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
@@ -77,7 +77,7 @@ class JSONTestCase(FlaskTestCase):
         for url in '/kw', '/dict':
             rv = c.get(url)
             self.assert_equal(rv.mimetype, 'application/json')
-            self.assert_equal(flask.json.loads(rv.data), d)
+            self.assert_equal(flask.json.loads(rv.data.decode('ascii')), d)
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
@@ -109,6 +109,7 @@ class JSONTestCase(FlaskTestCase):
         def index():
             return flask.request.args['foo']
 
+        app.debug = True
         rv = app.test_client().get('/?foo=정상처리'.encode('euc-kr'))
         self.assert_equal(rv.status_code, 200)
         self.assert_equal(rv.data, '정상처리'.encode('utf-8'))
