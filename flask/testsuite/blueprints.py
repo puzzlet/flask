@@ -186,7 +186,7 @@ class ModuleTestCase(FlaskTestCase):
             except TemplateNotFound as e:
                 self.assert_equal(e.name, 'missing.html')
             else:
-                self.assert_(0, 'expected exception')
+                self.assertTrue(0, 'expected exception')
 
         with flask.Flask(__name__).test_request_context():
             self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
@@ -202,13 +202,13 @@ class ModuleTestCase(FlaskTestCase):
             except NotFound:
                 pass
             else:
-                self.assert_(0, 'expected exception')
+                self.assertTrue(0, 'expected exception')
             try:
                 f('../__init__.py')
             except NotFound:
                 pass
             else:
-                self.assert_(0, 'expected exception')
+                self.assertTrue(0, 'expected exception')
 
             # testcase for a security issue that may exist on windows systems
             import os
@@ -221,7 +221,7 @@ class ModuleTestCase(FlaskTestCase):
                 except NotFound:
                     pass
                 else:
-                    self.assert_(0, 'expected exception')
+                    self.assertTrue(0, 'expected exception')
             finally:
                 os.path = old_path
 
@@ -381,7 +381,7 @@ class BlueprintTestCase(FlaskTestCase):
             except TemplateNotFound as e:
                 self.assert_equal(e.name, 'missing.html')
             else:
-                self.assert_(0, 'expected exception')
+                self.assertTrue(0, 'expected exception')
 
         with flask.Flask(__name__).test_request_context():
             self.assert_equal(flask.render_template('nested/nested.txt'), 'I\'m nested')
@@ -548,7 +548,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('my_reverse' in  list(app.jinja_env.filters.keys()))
+        self.assertTrue('my_reverse' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -559,7 +559,7 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_filter(my_reverse)
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('my_reverse' in  list(app.jinja_env.filters.keys()))
+        self.assertTrue('my_reverse' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['my_reverse'], my_reverse)
         self.assert_equal(app.jinja_env.filters['my_reverse']('abcd'), 'dcba')
 
@@ -570,7 +570,7 @@ class BlueprintTestCase(FlaskTestCase):
             return s[::-1]
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('strrev' in  list(app.jinja_env.filters.keys()))
+        self.assertTrue('strrev' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 
@@ -581,7 +581,7 @@ class BlueprintTestCase(FlaskTestCase):
         bp.add_app_template_filter(my_reverse, 'strrev')
         app = flask.Flask(__name__)
         app.register_blueprint(bp, url_prefix='/py')
-        self.assert_('strrev' in  list(app.jinja_env.filters.keys()))
+        self.assertTrue('strrev' in  list(app.jinja_env.filters.keys()))
         self.assert_equal(app.jinja_env.filters['strrev'], my_reverse)
         self.assert_equal(app.jinja_env.filters['strrev']('abcd'), 'dcba')
 

@@ -1261,7 +1261,7 @@ class Flask(_PackageBoundObject):
             if isinstance(e, typecheck):
                 return handler(e)
 
-        raise exc_type(exc_value).with_traceback(tb)
+        raise exc_value.with_traceback(tb)
 
     def handle_exception(self, e):
         """Default exception handling that kicks in when an exception
@@ -1283,7 +1283,7 @@ class Flask(_PackageBoundObject):
             # (the function was actually called from the except part)
             # otherwise, we just raise the error again
             if exc_value is e:
-                raise exc_type(exc_value).with_traceback(tb)
+                raise exc_value.with_traceback(tb)
             else:
                 raise e
 
@@ -1511,7 +1511,7 @@ class Flask(_PackageBoundObject):
         # still the same one we can reraise it with the original traceback,
         # otherwise we raise it from here.
         if error is exc_value:
-            raise exc_type(exc_value).with_traceback(tb)
+            raise exc_value.with_traceback(tb)
         raise error
 
     def preprocess_request(self):
@@ -1682,11 +1682,17 @@ class Flask(_PackageBoundObject):
                                a list of headers and an optional
                                exception context to start the response
         """
-        with self.request_context(environ):
+        with self.request_context(environ) as ctx:
             try:
                 response = self.full_dispatch_request()
             except Exception as e:
                 response = self.make_response(self.handle_exception(e))
+
+                # NOTE: In Python 3, exceptions are scoped at their own
+                #       except: blocks, so RequestContext.__exit__() won't
+                #       get have exc_info handled in this block.
+                #       So we pass it the information about the exception.
+                ctx.commit_exc_info()
             return response(environ, start_response)
 
     @property

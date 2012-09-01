@@ -49,8 +49,8 @@ class JSONTestCase(FlaskTestCase):
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
         self.assert_equal(rv.mimetype, 'application/json')
-        self.assert_(b'description' in flask.json.loads(rv.data))
-        self.assert_(b'<p>' not in flask.json.loads(rv.data)['description'])
+        self.assertTrue('description' in flask.json.loads(rv.data.decode('ascii')))
+        self.assertTrue('<p>' not in flask.json.loads(rv.data.decode('ascii'))['description'])
 
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
@@ -77,7 +77,7 @@ class JSONTestCase(FlaskTestCase):
         for url in '/kw', '/dict':
             rv = c.get(url)
             self.assert_equal(rv.mimetype, 'application/json')
-            self.assert_equal(flask.json.loads(rv.data), d)
+            self.assert_equal(flask.json.loads(rv.data.decode('ascii')), d)
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
@@ -109,6 +109,7 @@ class JSONTestCase(FlaskTestCase):
         def index():
             return flask.request.args['foo']
 
+        app.debug = True
         rv = app.test_client().get('/?foo=정상처리'.encode('euc-kr'))
         self.assert_equal(rv.status_code, 200)
         self.assert_equal(rv.data, '정상처리'.encode('utf-8'))
@@ -123,7 +124,7 @@ class SendfileTestCase(FlaskTestCase):
         app = flask.Flask(__name__)
         with app.test_request_context():
             rv = flask.send_file('static/index.html')
-            self.assert_(rv.direct_passthrough)
+            self.assertTrue(rv.direct_passthrough)
             self.assert_equal(rv.mimetype, 'text/html')
             with app.open_resource('static/index.html') as f:
                 self.assert_equal(rv.data, f.read())
@@ -133,8 +134,8 @@ class SendfileTestCase(FlaskTestCase):
         app.use_x_sendfile = True
         with app.test_request_context():
             rv = flask.send_file('static/index.html')
-            self.assert_(rv.direct_passthrough)
-            self.assert_('x-sendfile' in rv.headers)
+            self.assertTrue(rv.direct_passthrough)
+            self.assertTrue('x-sendfile' in rv.headers)
             self.assert_equal(rv.headers['x-sendfile'],
                 os.path.join(app.root_path, 'static/index.html'))
             self.assert_equal(rv.mimetype, 'text/html')
@@ -157,7 +158,7 @@ class SendfileTestCase(FlaskTestCase):
                 f = open(os.path.join(app.root_path, 'static/index.html'))
                 rv = flask.send_file(f)
                 self.assert_equal(rv.mimetype, 'text/html')
-                self.assert_('x-sendfile' in rv.headers)
+                self.assertTrue('x-sendfile' in rv.headers)
                 self.assert_equal(rv.headers['x-sendfile'],
                     os.path.join(app.root_path, 'static/index.html'))
             # mimetypes + etag
@@ -185,7 +186,7 @@ class SendfileTestCase(FlaskTestCase):
             with app.test_request_context():
                 f = StringIO('Test')
                 rv = flask.send_file(f)
-                self.assert_('x-sendfile' not in rv.headers)
+                self.assertTrue('x-sendfile' not in rv.headers)
             # etags
             self.assert_equal(len(captured), 1)
 
@@ -258,10 +259,10 @@ class LoggingTestCase(FlaskTestCase):
     def test_logger_cache(self):
         app = flask.Flask(__name__)
         logger1 = app.logger
-        self.assert_(app.logger is logger1)
+        self.assertTrue(app.logger is logger1)
         self.assert_equal(logger1.name, __name__)
         app.logger_name = __name__ + '/test_logger_cache'
-        self.assert_(app.logger is not logger1)
+        self.assertTrue(app.logger is not logger1)
 
     def test_debug_log(self):
         app = flask.Flask(__name__)
@@ -281,10 +282,10 @@ class LoggingTestCase(FlaskTestCase):
             with catch_stderr() as err:
                 c.get('/')
                 out = err.getvalue()
-                self.assert_('WARNING in helpers [' in out)
-                self.assert_(os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in out)
-                self.assert_('the standard library is dead' in out)
-                self.assert_('this is a debug statement' in out)
+                self.assertTrue('WARNING in helpers [' in out)
+                self.assertTrue(os.path.basename(__file__.rsplit('.', 1)[0] + '.py') in out)
+                self.assertTrue('the standard library is dead' in out)
+                self.assertTrue('this is a debug statement' in out)
 
             with catch_stderr() as err:
                 try:
@@ -292,7 +293,7 @@ class LoggingTestCase(FlaskTestCase):
                 except ZeroDivisionError:
                     pass
                 else:
-                    self.assert_(False, 'debug log ate the exception')
+                    self.assertTrue(False, 'debug log ate the exception')
 
     def test_debug_log_override(self):
         app = flask.Flask(__name__)
@@ -313,13 +314,13 @@ class LoggingTestCase(FlaskTestCase):
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
-        self.assert_(b'Internal Server Error' in rv.data)
+        self.assertTrue(b'Internal Server Error' in rv.data)
 
         err = out.getvalue()
-        self.assert_('Exception on / [GET]' in err)
-        self.assert_('Traceback (most recent call last):' in err)
-        self.assert_('1/0' in err)
-        self.assert_('ZeroDivisionError:' in err)
+        self.assertTrue('Exception on / [GET]' in err)
+        self.assertTrue('Traceback (most recent call last):' in err)
+        self.assertTrue('1/0' in err)
+        self.assertTrue('ZeroDivisionError:' in err)
 
     def test_processor_exceptions(self):
         app = flask.Flask(__name__)
