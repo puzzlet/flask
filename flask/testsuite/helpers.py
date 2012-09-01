@@ -49,8 +49,8 @@ class JSONTestCase(FlaskTestCase):
         rv = c.post('/json', data='malformed', content_type='application/json')
         self.assert_equal(rv.status_code, 400)
         self.assert_equal(rv.mimetype, 'application/json')
-        self.assert_('description' in flask.json.loads(rv.data))
-        self.assert_('<p>' not in flask.json.loads(rv.data)['description'])
+        self.assert_(b'description' in flask.json.loads(rv.data))
+        self.assert_(b'<p>' not in flask.json.loads(rv.data)['description'])
 
     def test_json_body_encoding(self):
         app = flask.Flask(__name__)
@@ -87,7 +87,7 @@ class JSONTestCase(FlaskTestCase):
         c = app.test_client()
         rv = c.post('/add', data=flask.json.dumps({'a': 1, 'b': 2}),
                             content_type='application/json')
-        self.assert_equal(rv.data, '3')
+        self.assert_equal(rv.data, b'3')
 
     def test_template_escaping(self):
         app = flask.Flask(__name__)
@@ -168,14 +168,14 @@ class SendfileTestCase(FlaskTestCase):
             with catch_warnings() as captured:
                 f = StringIO('Test')
                 rv = flask.send_file(f)
-                self.assert_equal(rv.data, 'Test')
+                self.assert_equal(rv.data, b'Test')
                 self.assert_equal(rv.mimetype, 'application/octet-stream')
             # etags
             self.assert_equal(len(captured), 1)
             with catch_warnings() as captured:
                 f = StringIO('Test')
                 rv = flask.send_file(f, mimetype='text/plain')
-                self.assert_equal(rv.data, 'Test')
+                self.assert_equal(rv.data, b'Test')
                 self.assert_equal(rv.mimetype, 'text/plain')
             # etags
             self.assert_equal(len(captured), 1)
@@ -313,7 +313,7 @@ class LoggingTestCase(FlaskTestCase):
 
         rv = app.test_client().get('/')
         self.assert_equal(rv.status_code, 500)
-        self.assert_('Internal Server Error' in rv.data)
+        self.assert_(b'Internal Server Error' in rv.data)
 
         err = out.getvalue()
         self.assert_('Exception on / [GET]' in err)
@@ -341,7 +341,7 @@ class LoggingTestCase(FlaskTestCase):
         for trigger in 'before', 'after':
             rv = app.test_client().get('/')
             self.assert_equal(rv.status_code, 500)
-            self.assert_equal(rv.data, 'Hello Server Error')
+            self.assert_equal(rv.data, b'Hello Server Error')
 
     def test_url_for_with_anchor(self):
         app = flask.Flask(__name__)
@@ -411,7 +411,7 @@ class StreamingTestCase(FlaskTestCase):
             return flask.Response(flask.stream_with_context(generate()))
         c = app.test_client()
         rv = c.get('/?name=World')
-        self.assertEqual(rv.data, 'Hello World!')
+        self.assertEqual(rv.data, b'Hello World!')
 
     def test_streaming_with_context_as_decorator(self):
         app = flask.Flask(__name__)
@@ -426,7 +426,7 @@ class StreamingTestCase(FlaskTestCase):
             return flask.Response(generate())
         c = app.test_client()
         rv = c.get('/?name=World')
-        self.assertEqual(rv.data, 'Hello World!')
+        self.assertEqual(rv.data, b'Hello World!')
 
     def test_streaming_with_context_and_custom_close(self):
         app = flask.Flask(__name__)
@@ -451,7 +451,7 @@ class StreamingTestCase(FlaskTestCase):
                 Wrapper(generate())))
         c = app.test_client()
         rv = c.get('/?name=World')
-        self.assertEqual(rv.data, 'Hello World!')
+        self.assertEqual(rv.data, b'Hello World!')
         self.assertEqual(called, [42])
 
 

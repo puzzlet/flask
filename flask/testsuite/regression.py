@@ -67,7 +67,7 @@ class MemoryTestCase(FlaskTestCase):
             with app.test_client() as c:
                 rv = c.get('/')
                 self.assert_equal(rv.status_code, 200)
-                self.assert_equal(rv.data, '<h1>42</h1>')
+                self.assert_equal(rv.data, b'<h1>42</h1>')
 
         # Trigger caches
         fire()

@@ -27,7 +27,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('context_template.html', value=23)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '<p>23|42')
+        self.assert_equal(rv.data, b'<p>23|42')
 
     def test_original_win(self):
         app = flask.Flask(__name__)
@@ -35,7 +35,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template_string('{{ config }}', config=42)
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '42')
+        self.assert_equal(rv.data, b'42')
 
     def test_standard_context(self):
         app = flask.Flask(__name__)
@@ -51,7 +51,7 @@ class TemplatingTestCase(FlaskTestCase):
                 {{ session.test }}
             ''')
         rv = app.test_client().get('/?foo=42')
-        self.assert_equal(rv.data.split(), ['42', '23', 'False', 'aha'])
+        self.assert_equal(rv.data.split(), [b'42', b'23', b'False', b'aha'])
 
     def test_escaping(self):
         text = '<p>Hello World!'
@@ -62,12 +62,12 @@ class TemplatingTestCase(FlaskTestCase):
                                          html=flask.Markup(text))
         lines = app.test_client().get('/').data.splitlines()
         self.assert_equal(lines, [
-            '&lt;p&gt;Hello World!',
-            '<p>Hello World!',
-            '<p>Hello World!',
-            '<p>Hello World!',
-            '&lt;p&gt;Hello World!',
-            '<p>Hello World!'
+            b'&lt;p&gt;Hello World!',
+            b'<p>Hello World!',
+            b'<p>Hello World!',
+            b'<p>Hello World!',
+            b'&lt;p&gt;Hello World!',
+            b'<p>Hello World!'
         ])
 
     def test_no_escaping(self):
@@ -129,7 +129,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, b'dcba')
 
     def test_add_template_filter_with_template(self):
         app = flask.Flask(__name__)
@@ -140,7 +140,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, b'dcba')
 
     def test_template_filter_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -151,7 +151,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, b'dcba')
 
     def test_add_template_filter_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -162,7 +162,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_filter.html', value='abcd')
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, 'dcba')
+        self.assert_equal(rv.data, b'dcba')
 
     def test_custom_template_loader(self):
         class MyFlask(flask.Flask):
@@ -175,7 +175,7 @@ class TemplatingTestCase(FlaskTestCase):
             return flask.render_template('index.html')
         c = app.test_client()
         rv = c.get('/')
-        self.assert_equal(rv.data, 'Hello Custom World!')
+        self.assert_equal(rv.data, b'Hello Custom World!')
 
 
     def test_iterable_loader(self):
@@ -192,7 +192,7 @@ class TemplatingTestCase(FlaskTestCase):
                 value=23)
 
         rv = app.test_client().get('/')
-        self.assert_equal(rv.data, '<h1>Jameson</h1>')
+        self.assert_equal(rv.data, b'<h1>Jameson</h1>')
 
 
 
