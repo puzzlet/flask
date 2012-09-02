@@ -114,6 +114,7 @@ class ExtImportHookTestCase(FlaskTestCase):
             self.assertTrue(tb.tb_frame.f_globals is globals())
 
             next = tb.tb_next
+            next = next.tb_next  # XXX: Python 3
             self.assertTrue('flask_broken/__init__.py' in next.tb_frame.f_code.co_filename)
 
 
