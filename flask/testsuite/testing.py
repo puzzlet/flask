@@ -221,7 +221,7 @@ class SubdomainTestCase(FlaskTestCase):
         response = self.client.get(url)
 
         self.assertEquals(200, response.status_code)
-        self.assertEquals('xxx', response.data)
+        self.assertEquals(b'xxx', response.data)
 
 
     def test_nosubdomain(self):
@@ -233,7 +233,7 @@ class SubdomainTestCase(FlaskTestCase):
         response = self.client.get(url)
 
         self.assertEquals(200, response.status_code)
-        self.assertEquals('xxx', response.data)
+        self.assertEquals(b'xxx', response.data)
 
 
 def suite():

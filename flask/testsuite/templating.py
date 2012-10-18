@@ -221,7 +221,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_test_with_template(self):
         app = flask.Flask(__name__)
@@ -232,7 +232,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_template_test_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -243,7 +243,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_test_with_name_and_template(self):
         app = flask.Flask(__name__)
@@ -254,7 +254,7 @@ class TemplatingTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_custom_template_loader(self):
         class MyFlask(flask.Flask):

@@ -84,13 +84,13 @@ class JSONTestCase(FlaskTestCase):
 
         app.config['JSON_AS_ASCII'] = True
         with app.app_context():
-            rv = flask.json.dumps(u'\N{SNOWMAN}')
+            rv = flask.json.dumps('\N{SNOWMAN}')
             self.assert_equal(rv, '"\\u2603"')
 
         app.config['JSON_AS_ASCII'] = False
         with app.app_context():
-            rv = flask.json.dumps(u'\N{SNOWMAN}')
-            self.assert_equal(rv, u'"\u2603"')
+            rv = flask.json.dumps('\N{SNOWMAN}')
+            self.assert_equal(rv, '"\u2603"')
 
     def test_json_attr(self):
         app = flask.Flask(__name__)
@@ -141,7 +141,7 @@ class JSONTestCase(FlaskTestCase):
         rv = c.post('/', data=flask.json.dumps({
             'x': {'_foo': 42}
         }), content_type='application/json')
-        self.assertEqual(rv.data, '"<42>"')
+        self.assertEqual(rv.data, b'"<42>"')
 
     def test_modified_url_encoding(self):
         class ModifiedRequest(flask.Request):

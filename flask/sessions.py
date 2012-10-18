@@ -59,13 +59,13 @@ class TaggedJSONSerializer(object):
             if isinstance(value, tuple):
                 return {' t': [_tag(x) for x in value]}
             elif callable(getattr(value, '__html__', None)):
-                return {' m': unicode(value.__html__())}
+                return {' m': str(value.__html__())}
             elif isinstance(value, list):
                 return [_tag(x) for x in value]
             elif isinstance(value, datetime):
                 return {' d': http_date(value)}
             elif isinstance(value, dict):
-                return dict((k, _tag(v)) for k, v in value.iteritems())
+                return {k: _tag(v) for k, v in value.items()}
             return value
         return json.dumps(_tag(value), separators=(',', ':'))
 
@@ -73,7 +73,7 @@ class TaggedJSONSerializer(object):
         def object_hook(obj):
             if len(obj) != 1:
                 return obj
-            the_key, the_value = obj.iteritems().next()
+            the_key, the_value = list(obj.items())[0]
             if the_key == ' t':
                 return tuple(the_value)
             elif the_key == ' m':

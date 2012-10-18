@@ -15,7 +15,7 @@
 from contextlib import contextmanager
 from werkzeug.test import Client, EnvironBuilder
 from flask import _request_ctx_stack
-from urlparse import urlparse
+from urllib.parse import quote, urlparse
 
 
 def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
@@ -23,6 +23,10 @@ def make_test_environ_builder(app, path='/', base_url=None, *args, **kwargs):
     http_host = app.config.get('SERVER_NAME')
     app_root = app.config.get('APPLICATION_ROOT')
     if base_url is None:
+        # NOTE: In Python 3, urllib.parse.urlparse() won't accept bytestrings
+        #       with any non-ASCII character.
+        if isinstance(path, bytes):
+            path = quote(path, safe=range(256))  # XXX: workaroud for Python 3
         url = urlparse(path)
         base_url = 'http://%s/' % (url.netloc or http_host or 'localhost')
         if app_root:

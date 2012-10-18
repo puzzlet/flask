@@ -705,7 +705,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_template_test_after_route_with_template(self):
         app = flask.Flask(__name__)
@@ -718,7 +718,7 @@ class BlueprintTestCase(FlaskTestCase):
             return isinstance(value, bool)
         app.register_blueprint(bp, url_prefix='/py')
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_test_with_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -731,7 +731,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_template_test_with_name_and_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -744,7 +744,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
     def test_add_template_test_with_name_and_template(self):
         bp = flask.Blueprint('bp', __name__)
@@ -757,7 +757,7 @@ class BlueprintTestCase(FlaskTestCase):
         def index():
             return flask.render_template('template_test.html', value=False)
         rv = app.test_client().get('/')
-        self.assert_('Success!' in rv.data)
+        self.assert_(b'Success!' in rv.data)
 
 def suite():
     suite = unittest.TestSuite()

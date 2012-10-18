@@ -56,7 +56,7 @@ class JSONEncoder(_json.JSONEncoder):
         if isinstance(o, datetime):
             return http_date(o)
         if hasattr(o, '__html__'):
-            return unicode(o.__html__())
+            return str(o.__html__())
         return _json.JSONEncoder.default(self, o)
 
 
