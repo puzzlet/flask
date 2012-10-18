@@ -81,6 +81,9 @@ class TaggedJSONSerializer(object):
             elif the_key == ' d':
                 return parse_date(the_value)
             return obj
+        if isinstance(value, bytes):
+            # NOTE: In Python 3, json.loads() only accepts unicode strings
+            value = value.decode('utf-8')
         return json.loads(value, object_hook=object_hook)
 
 
