@@ -8,12 +8,12 @@
     :copyright: (c) 2011 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import with_statement
 import flask
 import flask.views
 import unittest
 from flask.testsuite import FlaskTestCase
 from werkzeug.http import parse_set_header
-
 
 class ViewTestCase(FlaskTestCase):
 
@@ -144,6 +144,23 @@ class ViewTestCase(FlaskTestCase):
         rv = c.head('/')
         self.assert_equal(rv.data, b'')
         self.assert_equal(rv.headers['X-Method'], 'HEAD')
+
+    def test_endpoint_override(self):
+        app = flask.Flask(__name__)
+        app.debug = True
+
+        class Index(flask.views.View):
+            methods = ['GET', 'POST']
+            def dispatch_request(self):
+                return flask.request.method
+
+        app.add_url_rule('/', view_func=Index.as_view('index'))
+
+        with self.assert_raises(AssertionError):
+            app.add_url_rule('/', view_func=Index.as_view('index'))
+
+        # But these tests should still pass. We just log a warning.
+        self.common_test(app)
 
 
 def suite():

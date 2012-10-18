@@ -79,6 +79,19 @@ class JSONTestCase(FlaskTestCase):
             self.assert_equal(rv.mimetype, 'application/json')
             self.assert_equal(flask.json.loads(rv.data.decode('ascii')), d)
 
+    def test_json_as_unicode(self):
+        app = flask.Flask(__name__)
+
+        app.config['JSON_AS_ASCII'] = True
+        with app.app_context():
+            rv = flask.json.dumps(u'\N{SNOWMAN}')
+            self.assert_equal(rv, '"\\u2603"')
+
+        app.config['JSON_AS_ASCII'] = False
+        with app.app_context():
+            rv = flask.json.dumps(u'\N{SNOWMAN}')
+            self.assert_equal(rv, u'"\u2603"')
+
     def test_json_attr(self):
         app = flask.Flask(__name__)
         @app.route('/add', methods=['POST'])
@@ -97,6 +110,38 @@ class JSONTestCase(FlaskTestCase):
             self.assert_equal(rv, '"<\\/script>"')
             rv = render('{{ "<\0/script>"|tojson|safe }}')
             self.assert_equal(rv, '"<\\u0000\\/script>"')
+            rv = render('{{ "<!--<script>"|tojson|safe }}')
+            self.assert_equal(rv, '"<\\u0021--<script>"')
+
+    def test_json_customization(self):
+        class X(object):
+            def __init__(self, val):
+                self.val = val
+        class MyEncoder(flask.json.JSONEncoder):
+            def default(self, o):
+                if isinstance(o, X):
+                    return '<%d>' % o.val
+                return flask.json.JSONEncoder.default(self, o)
+        class MyDecoder(flask.json.JSONDecoder):
+            def __init__(self, *args, **kwargs):
+                kwargs.setdefault('object_hook', self.object_hook)
+                flask.json.JSONDecoder.__init__(self, *args, **kwargs)
+            def object_hook(self, obj):
+                if len(obj) == 1 and '_foo' in obj:
+                    return X(obj['_foo'])
+                return obj
+        app = flask.Flask(__name__)
+        app.testing = True
+        app.json_encoder = MyEncoder
+        app.json_decoder = MyDecoder
+        @app.route('/', methods=['POST'])
+        def index():
+            return flask.json.dumps(flask.request.json['x'])
+        c = app.test_client()
+        rv = c.post('/', data=flask.json.dumps({
+            'x': {'_foo': 42}
+        }), content_type='application/json')
+        self.assertEqual(rv.data, '"<42>"')
 
     def test_modified_url_encoding(self):
         class ModifiedRequest(flask.Request):

@@ -37,3 +37,5 @@ Snippet Archives <http://flask.pocoo.org/snippets/>`_.
    favicon
    streaming
    deferredcallbacks
+   methodoverrides
+   requestchecksum
