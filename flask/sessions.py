@@ -66,14 +66,14 @@ class TaggedJSONSerializer(object):
                 return {' d': http_date(value)}
             elif isinstance(value, dict):
                 return {k: _tag(v) for k, v in value.items()}
-            elif isinstance(value, str):
+            elif isinstance(value, bytes):
                 try:
-                    return unicode(value)
+                    return value.decode('ascii')
                 except UnicodeError:
-                    raise UnexpectedUnicodeError(u'A byte string with '
-                        u'non-ASCII data was passed to the session system '
-                        u'which can only store unicode strings.  Consider '
-                        u'base64 encoding your string (String was %r)' % value)
+                    raise UnexpectedUnicodeError('A byte string with '
+                        'non-ASCII data was passed to the session system '
+                        'which can only store unicode strings.  Consider '
+                        'base64 encoding your string (String was %r)' % value)
             return value
         return json.dumps(_tag(value), separators=(',', ':'))
 
